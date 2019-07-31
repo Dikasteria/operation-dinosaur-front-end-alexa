@@ -50,11 +50,83 @@
           "name": "QuizIntent",
           "confirmationRequired": false,
           "prompts": {},
-          "slots": []
+          "slots": [
+            {
+              "name": "mood",
+              "type": "AMAZON.NUMBER",
+              "confirmationRequired": false,
+              "elicitationRequired": true,
+              "prompts": { "elicitation": "Elicit.Intent-Quiz.Slot-Mood" }
+            },
+            {
+              "name": "stiffness",
+              "type": "AMAZON.NUMBER",
+              "confirmationRequired": false,
+              "elicitationRequired": true,
+              "prompts": {
+                "elicitation": "Elicit.Intent-Quiz.Slot-Stiffness"
+              }
+            },
+            {
+              "name": "slowness",
+              "type": "AMAZON.NUMBER",
+              "confirmationRequired": false,
+              "elicitationRequired": true,
+              "prompts": {
+                "elicitation": "Elicit.Intent-Quiz.Slot-Slowness"
+              }
+            },
+            {
+              "name": "tremor",
+              "type": "AMAZON.NUMBER",
+              "confirmationRequired": false,
+              "elicitationRequired": true,
+              "prompts": {
+                "elicitation": "Elicit.Intent-Quiz.Slot-Tremor"
+              }
+            }
+          ]
         }
       ],
       "delegationStrategy": "ALWAYS"
     },
-    "prompts": []
+    "prompts": [
+      {
+        "id": "Elicit.Intent-Quiz.Slot-Mood",
+        "variations": [
+          {
+            "type": "PlainText",
+            "value": "On a scale of one to five, how is your mood today"
+          }
+        ]
+      },
+      {
+        "id": "Elicit.Intent-Quiz.Slot-Stiffness",
+        "variations": [
+          {
+            "type": "PlainText",
+            "value": "On a scale of one to five, how stiff do you feel today"
+          }
+        ]
+      },
+      {
+        "id": "Elicit.Intent-Quiz.Slot-Slowness",
+        "variations": [
+          {
+            "type": "PlainText",
+            "value": "On a scale of one to five, how slow do you feel today"
+          }
+        ]
+      },
+      {
+        "id": "Elicit.Intent-Quiz.Slot-Tremor",
+        "variations": [
+          {
+            "type": "PlainText",
+            "value": "On a scale of one to five, how are your tremors today"
+          }
+        ]
+      }
+    ]
   }
 }
