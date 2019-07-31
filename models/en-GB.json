@@ -17,8 +17,25 @@
         },
         {
           "name": "QuizIntent",
-          "slots": [],
-          "samples": ["open quiz"]
+          "slots": [
+            { "name": "mood", "type": "AMAZON.NUMBER", "samples": ["{mood}"] },
+            {
+              "name": "stiffness",
+              "type": "AMAZON.NUMBER",
+              "samples": ["{stiffness}"]
+            },
+            {
+              "name": "slowness",
+              "type": "AMAZON.NUMBER",
+              "samples": ["{slowness}"]
+            },
+            {
+              "name": "tremor",
+              "type": "AMAZON.NUMBER",
+              "samples": ["{tremor}"]
+            }
+          ],
+          "samples": ["open quiz", "quiz", "take a quiz"]
         },
         {
           "name": "AMAZON.NavigateHomeIntent",
@@ -27,7 +44,17 @@
       ],
       "types": []
     },
-    "dialog": {},
+    "dialog": {
+      "intents": [
+        {
+          "name": "QuizIntent",
+          "confirmationRequired": false,
+          "prompts": {},
+          "slots": []
+        }
+      ],
+      "delegationStrategy": "ALWAYS"
+    },
     "prompts": []
   }
 }
