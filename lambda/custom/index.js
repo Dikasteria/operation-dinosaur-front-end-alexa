@@ -25,13 +25,13 @@ const QuizIntentHandler = {
     );
   },
   handle(handlerInput) {
-    const mood = handlerInput.requestEnvelope.request.intent.slot.mood.value;
+    const mood = handlerInput.requestEnvelope.request.intent.slots.mood.value;
     const stiffness =
-      handlerInput.requestEnvelope.request.intent.slot.stiffness.value;
+      handlerInput.requestEnvelope.request.intent.slots.stiffness.value;
     const slowness =
-      handlerInput.requestEnvelope.request.intent.slot.slowness.value;
+      handlerInput.requestEnvelope.request.intent.slots.slowness.value;
     const tremor =
-      handlerInput.requestEnvelope.request.intent.slot.tremor.value;
+      handlerInput.requestEnvelope.request.intent.slots.tremor.value;
     console.log({ mood, stiffness, slowness, tremor });
     return handlerInput.responseBuilder.speak("Testing").getResponse();
   }
@@ -95,16 +95,10 @@ const IntentReflectorHandler = {
     const intentName = Alexa.getIntentName(handlerInput.requestEnvelope);
     const speakOutput = `You just triggered ${intentName}`;
 
-    return handlerInput.responseBuilder
-      .speak(speakOutput)
-
-      .getResponse();
+    return handlerInput.responseBuilder.speak(speakOutput).getResponse();
   }
 };
 
-// Generic error handling to capture any syntax or routing errors. If you receive an error
-// stating the request handler chain is not found, you have not implemented a handler for
-// the intent being invoked or included it in the skill builder below.
 const ErrorHandler = {
   canHandle() {
     return true;

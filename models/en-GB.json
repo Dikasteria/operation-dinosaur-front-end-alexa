@@ -1,7 +1,7 @@
 {
   "interactionModel": {
     "languageModel": {
-      "invocationName": "medi rep",
+      "invocationName": "diary app",
       "intents": [
         {
           "name": "AMAZON.CancelIntent",

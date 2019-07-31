@@ -10,7 +10,7 @@
         },
         "interactionModel": {
           "en-GB": {
-            "eTag": "1c4e8fb20b229d29d3f114620f0a909e"
+            "eTag": "ab34b4ff7ae8283fc59e5c80e2080d3d"
           }
         },
         "lambda": [
@@ -23,7 +23,7 @@
             "codeUri": "lambda/custom",
             "functionName": "ask-custom-medirep-alexa-default",
             "handler": "index.handler",
-            "revisionId": "51561eb6-5c84-452a-86d0-7638d8e6166c",
+            "revisionId": "946a4feb-693a-4674-935b-aea9afbe63a0",
             "runtime": "nodejs8.10"
           }
         ]
