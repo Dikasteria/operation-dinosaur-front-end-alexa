@@ -1,6 +1,6 @@
 const Alexa = require("ask-sdk-core");
 const axios = require("axios");
-const baseUrl = "https://medirep-api.herokuapp.com/api/";
+const baseUrl = "https://medirep-api.herokuapp.com/api";
 const user_id = 1;
 
 const LaunchRequestHandler = {
@@ -17,6 +17,7 @@ const LaunchRequestHandler = {
       .getResponse();
   }
 };
+
 const QuizIntentHandler = {
   canHandle(handlerInput) {
     return (
@@ -24,16 +25,46 @@ const QuizIntentHandler = {
       Alexa.getIntentName(handlerInput.requestEnvelope) === "QuizIntent"
     );
   },
-  handle(handlerInput) {
-    const mood = handlerInput.requestEnvelope.request.intent.slots.mood.value;
+  async handle(handlerInput) {
+    const mood =
+      handlerInput.requestEnvelope.request.intent.slots.mood.value;
     const stiffness =
       handlerInput.requestEnvelope.request.intent.slots.stiffness.value;
     const slowness =
       handlerInput.requestEnvelope.request.intent.slots.slowness.value;
     const tremor =
       handlerInput.requestEnvelope.request.intent.slots.tremor.value;
-    console.log({ mood, stiffness, slowness, tremor });
-    return handlerInput.responseBuilder.speak("Testing").getResponse();
+
+    const quizAnswers =
+      { mood, stiffness, slowness, tremor };
+
+    const response =
+      await axios.post(`${baseUrl}/quiz/${user_id}`, {...quizAnswers});
+
+    let speakOut = '';
+    if(response.data.quiz && response.data.quiz.completed_at){
+      speakOut = 'Your answers have been recorded';
+    } else {
+      speakOut = 'Sorry, your answers could not be recorded. Please try again.';
+    };
+
+    return handlerInput.responseBuilder.speak(speakOut).getResponse();
+  }
+};
+
+const PairDeviceIntentHandler = {
+  canHandle(handlerInput) {
+    return (
+      Alexa.getRequestType(handlerInput.requestEnvelope) === "IntentRequest" &&
+      Alexa.getIntentName(handlerInput.requestEnvelope) === "PairDeviceIntent"
+    );
+  },
+  handle(handlerInput) {
+    const pairDeviceCode =
+      handlerInput.requestEnvelope.request.intent.slots.pairDeviceCode.value;
+    const amazon_id = handlerInput.requestEnvelope.session.user.userId;
+    console.log(amazon_id);
+    return handlerInput.responseBuilder.speak(pairDeviceCode).getResponse();
   }
 };
 //
@@ -84,7 +115,6 @@ const SessionEndedRequestHandler = {
     return handlerInput.responseBuilder.getResponse();
   }
 };
-
 const IntentReflectorHandler = {
   canHandle(handlerInput) {
     return (
@@ -98,7 +128,6 @@ const IntentReflectorHandler = {
     return handlerInput.responseBuilder.speak(speakOutput).getResponse();
   }
 };
-
 const ErrorHandler = {
   canHandle() {
     return true;
@@ -118,6 +147,7 @@ exports.handler = Alexa.SkillBuilders.custom()
   .addRequestHandlers(
     LaunchRequestHandler,
     QuizIntentHandler,
+    PairDeviceIntentHandler,
     HelpIntentHandler,
     CancelAndStopIntentHandler,
     SessionEndedRequestHandler,

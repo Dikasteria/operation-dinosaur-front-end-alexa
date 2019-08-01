@@ -1,132 +1,200 @@
 {
   "interactionModel": {
-    "languageModel": {
-      "invocationName": "diary app",
-      "intents": [
-        {
-          "name": "AMAZON.CancelIntent",
-          "samples": []
-        },
-        {
-          "name": "AMAZON.HelpIntent",
-          "samples": []
-        },
-        {
-          "name": "AMAZON.StopIntent",
-          "samples": []
-        },
-        {
-          "name": "QuizIntent",
-          "slots": [
-            { "name": "mood", "type": "AMAZON.NUMBER", "samples": ["{mood}"] },
-            {
-              "name": "stiffness",
-              "type": "AMAZON.NUMBER",
-              "samples": ["{stiffness}"]
-            },
-            {
-              "name": "slowness",
-              "type": "AMAZON.NUMBER",
-              "samples": ["{slowness}"]
-            },
-            {
-              "name": "tremor",
-              "type": "AMAZON.NUMBER",
-              "samples": ["{tremor}"]
-            }
+      "languageModel": {
+          "invocationName": "diary app",
+          "intents": [
+              {
+                  "name": "AMAZON.CancelIntent",
+                  "samples": []
+              },
+              {
+                  "name": "AMAZON.HelpIntent",
+                  "samples": []
+              },
+              {
+                  "name": "AMAZON.StopIntent",
+                  "samples": []
+              },
+              {
+                  "name": "AMAZON.NavigateHomeIntent",
+                  "samples": []
+              },
+
+              {
+                  "name": "QuizIntent",
+                  "slots": [
+                      {
+                          "name": "mood",
+                          "type": "AMAZON.NUMBER",
+                          "samples": [
+                              "{mood}"
+                          ]
+                      },
+                      {
+                          "name": "stiffness",
+                          "type": "AMAZON.NUMBER",
+                          "samples": [
+                              "{stiffness}"
+                          ]
+                      },
+                      {
+                          "name": "slowness",
+                          "type": "AMAZON.NUMBER",
+                          "samples": [
+                              "{slowness}"
+                          ]
+                      },
+                      {
+                          "name": "tremor",
+                          "type": "AMAZON.NUMBER",
+                          "samples": [
+                              "{tremor}",
+                              "{tremor} out of five"
+                          ]
+                      }
+                  ],
+                  "samples": [
+                      "open quiz",
+                      "quiz",
+                      "take a quiz"
+                  ]
+              },
+
+              {
+                  "name": "PairDeviceIntent",
+                  "slots": [
+                      {
+                          "name": "pairDeviceCode",
+                          "type": "AMAZON.NUMBER",
+                          "samples": [
+                              "{pairDeviceCode}"
+                          ]
+                      }
+                  ],
+                  "samples": [
+                      "pair a device",
+                      "pair alexa",
+                      "add my alexa"
+                  ]
+              }
           ],
-          "samples": ["open quiz", "quiz", "take a quiz"]
-        },
-        {
-          "name": "AMAZON.NavigateHomeIntent",
-          "samples": []
-        }
-      ],
-      "types": []
-    },
-    "dialog": {
-      "intents": [
-        {
-          "name": "QuizIntent",
-          "confirmationRequired": false,
-          "prompts": {},
-          "slots": [
-            {
-              "name": "mood",
-              "type": "AMAZON.NUMBER",
-              "confirmationRequired": false,
-              "elicitationRequired": true,
-              "prompts": { "elicitation": "Elicit.Intent-Quiz.Slot-Mood" }
-            },
-            {
-              "name": "stiffness",
-              "type": "AMAZON.NUMBER",
-              "confirmationRequired": false,
-              "elicitationRequired": true,
-              "prompts": {
-                "elicitation": "Elicit.Intent-Quiz.Slot-Stiffness"
-              }
-            },
-            {
-              "name": "slowness",
-              "type": "AMAZON.NUMBER",
-              "confirmationRequired": false,
-              "elicitationRequired": true,
-              "prompts": {
-                "elicitation": "Elicit.Intent-Quiz.Slot-Slowness"
-              }
-            },
-            {
-              "name": "tremor",
-              "type": "AMAZON.NUMBER",
-              "confirmationRequired": false,
-              "elicitationRequired": true,
-              "prompts": {
-                "elicitation": "Elicit.Intent-Quiz.Slot-Tremor"
-              }
-            }
-          ]
-        }
-      ],
-      "delegationStrategy": "ALWAYS"
-    },
-    "prompts": [
-      {
-        "id": "Elicit.Intent-Quiz.Slot-Mood",
-        "variations": [
-          {
-            "type": "PlainText",
-            "value": "On a scale of one to five, how is your mood today"
-          }
-        ]
+
+          "types": []
       },
-      {
-        "id": "Elicit.Intent-Quiz.Slot-Stiffness",
-        "variations": [
-          {
-            "type": "PlainText",
-            "value": "On a scale of one to five, how stiff do you feel today"
-          }
-        ]
+
+      "dialog": {
+          "intents": [
+
+              {
+                  "name": "QuizIntent",
+                  "confirmationRequired": false,
+                  "prompts": {},
+                  "slots": [
+                      {
+                          "name": "mood",
+                          "type": "AMAZON.NUMBER",
+                          "confirmationRequired": false,
+                          "elicitationRequired": true,
+                          "prompts": {
+                              "elicitation": "Elicit.Intent-Quiz.Slot-Mood"
+                          }
+                      },
+                      {
+                          "name": "stiffness",
+                          "type": "AMAZON.NUMBER",
+                          "confirmationRequired": false,
+                          "elicitationRequired": true,
+                          "prompts": {
+                              "elicitation": "Elicit.Intent-Quiz.Slot-Stiffness"
+                          }
+                      },
+                      {
+                          "name": "slowness",
+                          "type": "AMAZON.NUMBER",
+                          "confirmationRequired": false,
+                          "elicitationRequired": true,
+                          "prompts": {
+                              "elicitation": "Elicit.Intent-Quiz.Slot-Slowness"
+                          }
+                      },
+                      {
+                          "name": "tremor",
+                          "type": "AMAZON.NUMBER",
+                          "confirmationRequired": false,
+                          "elicitationRequired": true,
+                          "prompts": {
+                              "elicitation": "Elicit.Intent-Quiz.Slot-Tremor"
+                          }
+                      }
+                  ]
+              },
+
+              {
+                  "name": "PairDeviceIntent",
+                  "confirmationRequired": false,
+                  "prompts": {},
+                  "slots": [
+                      {
+                          "name": "pairDeviceCode",
+                          "type": "AMAZON.NUMBER",
+                          "confirmationRequired": false,
+                          "elicitationRequired": true,
+                          "prompts": {
+                              "elicitation": "Elicit.Intent-PairDevice.Slots-All"
+                          }
+                      }
+                  ]
+              }
+          ],
+          
+          "delegationStrategy": "ALWAYS"
       },
-      {
-        "id": "Elicit.Intent-Quiz.Slot-Slowness",
-        "variations": [
+      "prompts": [
           {
-            "type": "PlainText",
-            "value": "On a scale of one to five, how slow do you feel today"
-          }
-        ]
-      },
-      {
-        "id": "Elicit.Intent-Quiz.Slot-Tremor",
-        "variations": [
+              "id": "Elicit.Intent-Quiz.Slot-Mood",
+              "variations": [
+                  {
+                      "type": "PlainText",
+                      "value": "On a scale of one to five, how is your mood today"
+                  }
+              ]
+          },
           {
-            "type": "PlainText",
-            "value": "On a scale of one to five, how are your tremors today"
+              "id": "Elicit.Intent-Quiz.Slot-Stiffness",
+              "variations": [
+                  {
+                      "type": "PlainText",
+                      "value": "On a scale of one to five, how stiff do you feel today"
+                  }
+              ]
+          },
+          {
+              "id": "Elicit.Intent-Quiz.Slot-Slowness",
+              "variations": [
+                  {
+                      "type": "PlainText",
+                      "value": "On a scale of one to five, how slow do you feel today"
+                  }
+              ]
+          },
+          {
+              "id": "Elicit.Intent-Quiz.Slot-Tremor",
+              "variations": [
+                  {
+                      "type": "PlainText",
+                      "value": "On a scale of one to five, how are your tremors today"
+                  }
+              ]
+          },
+          {
+              "id": "Elicit.Intent-PairDevice.Slots-All",
+              "variations": [
+                  {
+                      "type": "PlainText",
+                      "value": "What is your pair device code"
+                  }
+              ]
           }
-        ]
-      }
-    ]
+      ]
   }
 }
