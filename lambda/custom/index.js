@@ -1,6 +1,7 @@
 const Alexa = require("ask-sdk-core");
-const axios = require("axios");
+const API = require('./util/apiUtils')
 const baseUrl = "https://medirep-api.herokuapp.com/api";
+const axios = require("axios"); //TODO: extract axios requests to util functions
 const user_id = 1;
 
 const LaunchRequestHandler = {
@@ -74,14 +75,13 @@ const newReminderIntentHandler = {
           && Alexa.getIntentName(handlerInput.requestEnvelope) === 'newReminderIntent';
   },
 
-  // TODO: This needs to read the medication list and make sure that reminders for those items exist in the amazon reminders API
   async handle(handlerInput) {
+    // TODO: This needs to read the medication list and make sure that reminders for those items exist in the amazon reminders API
       const requestEnvelope = handlerInput.requestEnvelope;
       const responseBuilder = handlerInput.responseBuilder;
       const consentToken = requestEnvelope.context.System.apiAccessToken;
-
       switch (requestEnvelope.request.intent.confirmationStatus) {
-              case 'CONFIRMED':
+              case 'CONFIRMED':getAmazon
                 console.log('Alexa confirmed intent, so clear to create reminder');
                 break;
               case 'DENIED':
@@ -105,8 +105,11 @@ const newReminderIntentHandler = {
             .getResponse();
         }
         try {
+            
             const client = handlerInput.serviceClientFactory.getReminderManagementServiceClient();
             
+
+
             const reminderRequest = {
                 trigger: {
                     type: 'SCHEDULED_RELATIVE',
@@ -133,7 +136,10 @@ const newReminderIntentHandler = {
               }
           throw error;
       }
-      return responseBuilder.speak("s'all good")
+      // TODO: Get the amazon id from the request header here.
+      const currentReminders = API.getRemindersFromAmazon(user_id)
+
+      return responseBuilder.speak(`you now have ${currentReminders.length} reminders`)
           .getResponse()
   }
 };

@@ -20,14 +20,14 @@
                   "samples": []
               },
               {
-                "name": "ReminderIntent",
+                "name": "newReminderIntent",
                 "samples": [
                     "add reminders",
                     "update reminders",
                     "add medication reminders",
-                    "are my medication reminders up to date?"
+                    "are my medication reminders up to date"
                 ]
-                },
+              },
 
               {
                   "name": "QuizIntent",
@@ -93,7 +93,6 @@
 
       "dialog": {
           "intents": [
-
               {
                   "name": "QuizIntent",
                   "confirmationRequired": false,
