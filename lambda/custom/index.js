@@ -67,6 +67,76 @@ const PairDeviceIntentHandler = {
     return handlerInput.responseBuilder.speak(pairDeviceCode).getResponse();
   }
 };
+
+const newReminderIntentHandler = {
+  canHandle(handlerInput) {
+      return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
+          && Alexa.getIntentName(handlerInput.requestEnvelope) === 'newReminderIntent';
+  },
+
+  // TODO: This needs to read the medication list and make sure that reminders for those items exist in the amazon reminders API
+  async handle(handlerInput) {
+      const requestEnvelope = handlerInput.requestEnvelope;
+      const responseBuilder = handlerInput.responseBuilder;
+      const consentToken = requestEnvelope.context.System.apiAccessToken;
+
+      switch (requestEnvelope.request.intent.confirmationStatus) {
+              case 'CONFIRMED':
+                console.log('Alexa confirmed intent, so clear to create reminder');
+                break;
+              case 'DENIED':
+                console.log('Alexa disconfirmed the intent; not creating reminder');
+                return responseBuilder
+                  .speak(`Ok, I will not create any reminders`)
+                  .reprompt('')
+                  .getResponse();
+          case 'NONE':
+          default:
+            console.log('delegate back to Alexa to get confirmation');
+            return responseBuilder
+              .addDelegateDirective()
+              .getResponse();
+        }
+
+      if (!consentToken) {
+          return responseBuilder
+          .speak("you don't currently have reminders enabled for this skill")
+            .withAskForPermissionsConsentCard(PERMISSIONS)
+            .getResponse();
+        }
+        try {
+            const client = handlerInput.serviceClientFactory.getReminderManagementServiceClient();
+            
+            const reminderRequest = {
+                trigger: {
+                    type: 'SCHEDULED_RELATIVE',
+                    offsetInSeconds: '5',
+                  },
+                  alertInfo: {
+                      spokenInfo: {
+                          content: [{
+                              locale: 'en-GB',
+                              text: `Take your pills!`,
+                          }],
+                      },  
+                  },
+                  pushNotification: {
+                      status: 'ENABLED',
+                  },
+              };
+          const reminderResponse = await client.createReminder(reminderRequest).then(console.log);
+      } catch (error) {
+              if (error.name !== 'ServiceError') {
+              console.log(`error: ${error.stack}`);
+              const response = responseBuilder.speak('Something Went Terribly Wrong').getResponse();
+              return response;
+              }
+          throw error;
+      }
+      return responseBuilder.speak("s'all good")
+          .getResponse()
+  }
+};
 //
 //
 //
@@ -151,7 +221,8 @@ exports.handler = Alexa.SkillBuilders.custom()
     HelpIntentHandler,
     CancelAndStopIntentHandler,
     SessionEndedRequestHandler,
-    IntentReflectorHandler
+    IntentReflectorHandler,
+    newReminderIntentHandler
   )
   .addErrorHandlers(ErrorHandler)
   .lambda();

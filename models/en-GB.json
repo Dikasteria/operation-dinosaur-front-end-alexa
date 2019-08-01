@@ -137,7 +137,6 @@
                       }
                   ]
               },
-
               {
                   "name": "PairDeviceIntent",
                   "confirmationRequired": false,
@@ -153,7 +152,14 @@
                           }
                       }
                   ]
-              }
+              },
+              {
+                "name": "newReminderIntent",
+                "confirmationRequired": true,
+                "prompts": {
+                    "confirmation": "ConfirmCreateReminderIntent"
+                }
+            }
           ],
           
           "delegationStrategy": "ALWAYS"
@@ -203,6 +209,15 @@
                       "value": "What is your pair device code"
                   }
               ]
+          },
+          {
+            "id": "ConfirmCreateReminderIntent",
+            "variations": [
+                {
+                    "type": "PlainText",
+                    "value": "Would you like a new reminder?"
+                }
+            ]
           }
       ]
   }
