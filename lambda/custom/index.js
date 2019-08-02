@@ -1,8 +1,8 @@
 const Alexa = require("ask-sdk-core");
-const API = require('./util/apiUtils')
+const axios = require("axios");
 const baseUrl = "https://medirep-api.herokuapp.com/api";
-const axios = require("axios"); //TODO: extract axios requests to util functions
 const user_id = 1;
+const PERMISSIONS = ['alexa::alerts:reminders:skill:readwrite'];
 
 const LaunchRequestHandler = {
   canHandle(handlerInput) {
@@ -74,14 +74,23 @@ const newReminderIntentHandler = {
       return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
           && Alexa.getIntentName(handlerInput.requestEnvelope) === 'newReminderIntent';
   },
-
   async handle(handlerInput) {
-    // TODO: This needs to read the medication list and make sure that reminders for those items exist in the amazon reminders API
+    // TODO: Check for existing reminders. Are they what we expect?
+    // TODO: Add reminders otherwise
+    // TODO: Separate this out so it can trigger in the launch request if all the required reminders are not present
       const requestEnvelope = handlerInput.requestEnvelope;
       const responseBuilder = handlerInput.responseBuilder;
       const consentToken = requestEnvelope.context.System.apiAccessToken;
+      const permissions = requestEnvelope.context.System.user.permissions
+      if (!permissions) {
+        // if no permissions, nag the user to grant them
+        return responseBuilder
+          .speak('I need permission to create reminders. Take a look at your alexa app to grant these permissions.')
+          .withAskForPermissionsConsentCard(["alexa::alerts:reminders:skill:readwrite"])
+          .getResponse()
+      }
       switch (requestEnvelope.request.intent.confirmationStatus) {
-              case 'CONFIRMED':getAmazon
+              case 'CONFIRMED':
                 console.log('Alexa confirmed intent, so clear to create reminder');
                 break;
               case 'DENIED':
@@ -97,7 +106,6 @@ const newReminderIntentHandler = {
               .addDelegateDirective()
               .getResponse();
         }
-
       if (!consentToken) {
           return responseBuilder
           .speak("you don't currently have reminders enabled for this skill")
@@ -105,49 +113,37 @@ const newReminderIntentHandler = {
             .getResponse();
         }
         try {
-            
             const client = handlerInput.serviceClientFactory.getReminderManagementServiceClient();
-            
-
-
             const reminderRequest = {
                 trigger: {
-                    type: 'SCHEDULED_RELATIVE',
-                    offsetInSeconds: '5',
+                  type: 'SCHEDULED_RELATIVE',
+                  offsetInSeconds: '5',
+                },
+                alertInfo: {
+                  spokenInfo: {
+                    content: [{
+                      locale: 'en-GB',
+                      text: 'take yo pills',
+                    }],
                   },
-                  alertInfo: {
-                      spokenInfo: {
-                          content: [{
-                              locale: 'en-GB',
-                              text: `Take your pills!`,
-                          }],
-                      },  
-                  },
-                  pushNotification: {
-                      status: 'ENABLED',
-                  },
+                },
+                pushNotification: {
+                  status: 'ENABLED',
+                },
               };
-          const reminderResponse = await client.createReminder(reminderRequest).then(console.log);
+              console.log(reminderRequest)
+          await client.createReminder(reminderRequest).then(console.log);
       } catch (error) {
               if (error.name !== 'ServiceError') {
-              console.log(`error: ${error.stack}`);
-              const response = responseBuilder.speak('Something Went Terribly Wrong').getResponse();
-              return response;
+                console.log(`error: ${error.stack}`);
+                const response = responseBuilder.speak('Something Went Terribly Wrong').getResponse();
+                return response;
               }
           throw error;
       }
-      // TODO: Get the amazon id from the request header here.
-      const currentReminders = API.getRemindersFromAmazon(user_id)
-
-      return responseBuilder.speak(`you now have ${currentReminders.length} reminders`)
-          .getResponse()
+    return responseBuilder.speak("medication reminders are now up to date").getResponse()
   }
 };
-//
-//
-//
-//
-//
 
 const HelpIntentHandler = {
   canHandle(handlerInput) {
@@ -224,11 +220,14 @@ exports.handler = Alexa.SkillBuilders.custom()
     LaunchRequestHandler,
     QuizIntentHandler,
     PairDeviceIntentHandler,
+    newReminderIntentHandler,
     HelpIntentHandler,
     CancelAndStopIntentHandler,
     SessionEndedRequestHandler,
-    IntentReflectorHandler,
-    newReminderIntentHandler
+    IntentReflectorHandler
   )
+  .withApiClient(new Alexa.DefaultApiClient())
   .addErrorHandlers(ErrorHandler)
+  .addRequestInterceptors(RequestLog)
+  .addResponseInterceptors(ResponseLog)
   .lambda();

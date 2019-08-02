@@ -26,11 +26,11 @@
         }
       }
     },
-    "manifestVersion": "1.0"
-  },
-  "permissions": [
-    {
-      "name": "alexa::alerts:reminders:skill:readwrite"
-    }
-  ]
+    "manifestVersion": "1.0",
+    "permissions": [
+      {
+        "name": "alexa::alerts:reminders:skill:readwrite"
+      }
+    ]
+  }
 }
