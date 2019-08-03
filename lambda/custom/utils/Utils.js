@@ -1,4 +1,4 @@
-// const fs = require ('fs')
+
 const countActiveAlerts = (remindersArr) => {
    return remindersArr.reduce((acc, reminder) => {
         if (reminder.status === "ON") return acc + 1
@@ -20,7 +20,7 @@ const reminderBuilder = (meds) => {
                   this.alertInfo = {
                         spokenInfo: {
                             content: [{
-                                locale: "en-US", 
+                                locale: "en-GB", 
                                 text: `It's time to take your ${med.type}`
                             }]
                         }
@@ -28,15 +28,28 @@ const reminderBuilder = (meds) => {
                 this.pushNotification = {                            
                         status : "ENABLED"
                 }
-            }
-                 
+                } 
             }
             return meds.map(med => {
                 return new Reminder(med)
             })
 }
 
+const compareRemindersAgainstMeds = (presentReminders, medsReminders) => {
+    const medsRemindersArr = medsReminders.map(({alertInfo}) => {
+        console.log(alertInfo)
+        // return alertInfo.content[0].text.split
+    }) 
+    const presentRemindersArr = presentReminders.map(({alertInfo}) => {
+        console.log(alertInfo.content)
+        return alertInfo.spokenInfo.content[0].text
+    })
+    console.log(medsRemindersArr)
+    console.log(presentRemindersArr)
+}
+
 module.exports = {
     countActiveAlerts,
-    reminderBuilder
+    reminderBuilder,
+    compareRemindersAgainstMeds
 } 

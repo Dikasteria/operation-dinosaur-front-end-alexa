@@ -8,6 +8,12 @@ import axios from "axios"
 // Far East: https://api.fe.amazonalexa.com
 
 const baseUrl = "https://medirep-api.herokuapp.com/api";
+const amazonReminderURL = 'https://api.amazonalexa.com/v1/alerts/reminders/{id}'
+
+const getRemindersFromAmazon = (user_id) => {
+    const {alerts} = axios.get(`${amazonReminderURL}/${user_id}`) 
+    return alerts
+}
 
 const getMedicationList = (user_id) => {
     const { meds } = axios.get(`${BaseUrl}/meds/${user_id}`)
