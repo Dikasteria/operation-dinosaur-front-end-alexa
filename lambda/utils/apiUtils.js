@@ -13,8 +13,6 @@ const getMedicationList = async (user_id) => {
     const { data: { meds } } = await axios.get(`${baseUrl}/meds/${user_id}`)
     return meds
 }
-
-console.log(getMedicationList(1))
 module.exports = {
     getMedicationList
 }

@@ -26,21 +26,14 @@ const LaunchRequestHandler = {
           .getResponse()
       }
     // check reminders...
-    let speakOutput = "what would you like me to do";
-    return Promise.all([API.getMedicationList(user_id), client.getReminders()])
-      .then(([meds, {alerts: presentReminders}])=>{
-        console.log(meds, presentReminders)
-        const filteredMeds = utils.filterMedsAgainstExistingReminders(meds, presentReminders)
-        console.log(filteredMeds)
-        if (filteredMeds.length > 0) {
-          speakOutput = "It looks like there's been a change to your medication schedule. Please say update reminders to alter your reminders accordingly."
-        }
-        return responseBuilder
-          .speak(speakOutput)
-          .reprompt(speakOutput)
-          .getResponse();
-      })
-      .catch(console.log)
+    const upToDate = await utils.checkIfRemindersAreUpToDate(user_id, quizTime, client)
+    const speakOutput = upToDate ? 
+    "what would you like me to do"
+    : "It looks like there's been a change to your medication schedule. Please say update reminders to alter your reminders accordingly.";
+    return responseBuilder
+      .speak(speakOutput)
+      .reprompt(speakOutput)
+      .getResponse();
   }
 };
 
@@ -120,16 +113,19 @@ const newReminderIntentHandler = {
       }
       try {
         // TODO: delete reminders that are not required according to the schedule
-          API.getMedicationList(user_id)
-            .then( async (meds) => {
-              const { alerts: presentReminders } = await client.getReminders();
-              const filteredMeds = utils.filterMedsAgainstExistingReminders(meds, presentReminders)
-              const medsReminders = utils.reminderBuilder(filteredMeds)
-              medsReminders.forEach(async reminder => {
-                await client.createReminder(reminder).then(console.log);
-              })
-            })
-            .catch(console.log)
+          const meds = await API.getMedicationList(user_id)
+          const { alerts: presentReminders } = await client.getReminders();
+          const filteredMeds = utils.filterMedsAgainstExistingReminders(meds, presentReminders)
+          const medsReminders = utils.reminderBuilder(filteredMeds)
+          medsReminders.forEach(async reminder => {
+            await client.createReminder(reminder).then(console.log)
+          })
+          const quiz = await utils.checkForQuizReminder(presentReminders, quizTime) // TODO: patch existing quiz reminder if time changed
+          console.log(quiz, '###quiz')
+          if (!quiz) {
+            const quizReminder = utils.createQuizReminder(quizTime)
+            await client.createReminder(quizReminder).then(console.log)
+          }
       } catch (error) {
         if (error.name !== 'ServiceError') {
           console.log(`error: ${error.stack}`);
