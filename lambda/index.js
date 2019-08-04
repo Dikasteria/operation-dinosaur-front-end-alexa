@@ -1,18 +1,20 @@
 const Alexa = require("ask-sdk-core");
 const axios = require("axios"); //TODO: extract axios requests to util functions
 const baseUrl = "https://medirep-api.herokuapp.com/api";
-const user_id = 1;
+const user_id = 1; // TODO: has to be an amazon ID
 const PERMISSIONS = ['alexa::alerts:reminders:skill:readwrite'];
 const utils = require('./utils/Utils')
 const API = require('./utils/apiUtils')
+const quizTime = '15:00' // TODO this needs to come from the backend at some point
 
 const LaunchRequestHandler = {
   canHandle(handlerInput) {
     return (
       Alexa.getRequestType(handlerInput.requestEnvelope) === "LaunchRequest"
-    );
-  },
-  handle(handlerInput) {
+      );
+    },
+    async handle(handlerInput) {
+    const client = handlerInput.serviceClientFactory.getReminderManagementServiceClient();
     const { responseBuilder } = handlerInput
     const requestEnvelope = handlerInput.requestEnvelope;
     const permissions = requestEnvelope.context.System.user.permissions
@@ -25,18 +27,20 @@ const LaunchRequestHandler = {
       }
     // check reminders...
     let speakOutput = "what would you like me to do";
-    API.getMedicationList(user_id)
-      .then( async (meds) => {
-        const { alerts: presentReminders } = await client.getReminders();
+    return Promise.all([API.getMedicationList(user_id), client.getReminders()])
+      .then(([meds, {alerts: presentReminders}])=>{
+        console.log(meds, presentReminders)
         const filteredMeds = utils.filterMedsAgainstExistingReminders(meds, presentReminders)
+        console.log(filteredMeds)
         if (filteredMeds.length > 0) {
           speakOutput = "It looks like there's been a change to your medication schedule. Please say update reminders to alter your reminders accordingly."
         }
+        return responseBuilder
+          .speak(speakOutput)
+          .reprompt(speakOutput)
+          .getResponse();
       })
-    return responseBuilder
-      .speak(speakOutput)
-      .reprompt(speakOutput)
-      .getResponse();
+      .catch(console.log)
   }
 };
 
@@ -87,7 +91,7 @@ const newReminderIntentHandler = {
           && Alexa.getIntentName(handlerInput.requestEnvelope) === 'newReminderIntent';
   },
   async handle(handlerInput) {
-    // TODO: This needs to read the medication list and make sure that reminders for those items exist in the amazon reminders API
+      const client = handlerInput.serviceClientFactory.getReminderManagementServiceClient();
       const requestEnvelope = handlerInput.requestEnvelope;
       const responseBuilder = handlerInput.responseBuilder;
       const permissions = requestEnvelope.context.System.user.permissions
@@ -115,7 +119,6 @@ const newReminderIntentHandler = {
             .getResponse();
       }
       try {
-        const client = handlerInput.serviceClientFactory.getReminderManagementServiceClient();
         // TODO: delete reminders that are not required according to the schedule
           API.getMedicationList(user_id)
             .then( async (meds) => {
