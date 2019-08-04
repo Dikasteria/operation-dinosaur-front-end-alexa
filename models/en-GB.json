@@ -30,6 +30,16 @@
           ]
         },
         {
+          "name": "medsTakenIntent",
+          "samples": [
+            "I've taken my meds",
+            "I've taken those",
+            "taken pills",
+            "log that i've taken my medication",
+            "log that i've taken my pills"
+          ]
+        },
+        {
           "name": "QuizIntent",
           "slots": [
             {

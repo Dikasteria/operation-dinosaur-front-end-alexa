@@ -1,5 +1,4 @@
 const Alexa = require("ask-sdk-core");
-const axios = require("axios"); //TODO: extract axios requests to util functions
 const baseUrl = "https://medirep-api.herokuapp.com/api";
 const user_id = 1; // TODO: has to be an amazon ID
 const PERMISSIONS = ['alexa::alerts:reminders:skill:readwrite'];
@@ -47,33 +46,28 @@ const QuizIntentHandler = {
   async handle(handlerInput) {
     const { mood: {value: mood}, stiffness: {value: stiffness}, slowness: {value: slowness}, tremor: {value: tremor}} = handlerInput.requestEnvelope.request.intent.slots
     const quizAnswers = { mood, stiffness, slowness, tremor };
-
-    const response = await axios.post(`${baseUrl}/quiz/${user_id}`, {...quizAnswers});
-
+    const quiz = await API.postQuizAnswers(user_id, {...quizAnswers})
     let speakOut = '';
-    if(response.data.quiz && response.data.quiz.completed_at){
-      speakOut = 'Your answers have been recorded';
-    } else {
-      speakOut = 'Sorry, your answers could not be recorded. Please try again.';
-    };
-
+    const speakOut = (quiz && quiz.completed_at) ? 
+    'Your answers have been recorded'
+    :'Sorry, your answers could not be recorded. Please try again.'
     return handlerInput.responseBuilder
       .speak(speakOut)
       .getResponse();
   }
 };
 
-const PairDeviceIntentHandler = {
+const PairDeviceIntentHandler = { // TODO: pull this into it's own file. It's huge! 
   canHandle(handlerInput) {
     return (
       Alexa.getRequestType(handlerInput.requestEnvelope) === "IntentRequest" &&
       Alexa.getIntentName(handlerInput.requestEnvelope) === "PairDeviceIntent"
     );
   },
-  handle(handlerInput) {
-    const pairDeviceCode =
-      handlerInput.requestEnvelope.request.intent.slots.pairDeviceCode.value;
-    const amazon_id = handlerInput.requestEnvelope.session.user.userId;
+  async handle(handlerInput) {
+    const { requestEnvelope } =handlerInput 
+    const pairDeviceCode = requestEnvelope.request.intent.slots.pairDeviceCode.value;
+    const respose = await API.postHandShakeCode(user_id, value) // TODO: Logic to give user feedback if handshake was successful
     return handlerInput.responseBuilder.speak(pairDeviceCode).getResponse();
   }
 };
@@ -112,7 +106,7 @@ const newReminderIntentHandler = {
             .getResponse();
       }
       try {
-        // TODO: delete reminders that are not required according to the schedule
+        // TODO: delete reminders that are not required according to the schedule. Nuclear option?
           const meds = await API.getMedicationList(user_id)
           const { alerts: presentReminders } = await client.getReminders();
           const filteredMeds = utils.filterMedsAgainstExistingReminders(meds, presentReminders)
@@ -121,7 +115,6 @@ const newReminderIntentHandler = {
             await client.createReminder(reminder).then(console.log)
           })
           const quiz = await utils.checkForQuizReminder(presentReminders, quizTime) // TODO: patch existing quiz reminder if time changed
-          console.log(quiz, '###quiz')
           if (!quiz) {
             const quizReminder = utils.createQuizReminder(quizTime)
             await client.createReminder(quizReminder).then(console.log)
@@ -140,6 +133,24 @@ const newReminderIntentHandler = {
       .getResponse()
   }
 };
+
+const medsTakenHandler = {
+  canHandle(handlerInput) {
+    return (
+      Alexa.getRequestType(handlerInput.requestEnvelope) === "IntentRequest" &&
+      Alexa.getIntentName(handlerInput.requestEnvelope) === "medsTakenIntent"
+    );
+  },
+  async handle(handlerInput) {
+    const result = await API.postMedsTaken(user_id)
+    const speakOut = result ?
+    "Ok,  i've logged that you've taken your medication."
+    : "I'm sorry. I could not log that you've taken your medication."  
+    handlerInput.responseBuilder()
+      .speak(speakOut)
+      .getResponse()
+  }
+}
 
 const HelpIntentHandler = {
   canHandle(handlerInput) {
@@ -219,6 +230,7 @@ exports.handler = Alexa.SkillBuilders.custom()
     QuizIntentHandler,
     PairDeviceIntentHandler,
     newReminderIntentHandler,
+    medsTakenHandler,
     HelpIntentHandler,
     CancelAndStopIntentHandler,
     SessionEndedRequestHandler,
