@@ -4,6 +4,7 @@ const baseUrl = "https://medirep-api.herokuapp.com/api";
 const user_id = 1;
 const PERMISSIONS = ['alexa::alerts:reminders:skill:readwrite'];
 const utils = require('./utils/Utils')
+const API = require('./utils/apiUtils')
 
 const LaunchRequestHandler = {
   canHandle(handlerInput) {
@@ -22,7 +23,16 @@ const LaunchRequestHandler = {
           .withAskForPermissionsConsentCard(["alexa::alerts:reminders:skill:readwrite"])
           .getResponse()
       }
-    const speakOutput = "what would you like me to do";
+    // check reminders...
+    let speakOutput = "what would you like me to do";
+    API.getMedicationList(user_id)
+      .then( async (meds) => {
+        const { alerts: presentReminders } = await client.getReminders();
+        const filteredMeds = utils.filterMedsAgainstExistingReminders(meds, presentReminders)
+        if (filteredMeds.length > 0) {
+          speakOutput = "It looks like there's been a change to your medication schedule. Please say update reminders to alter your reminders accordingly."
+        }
+      })
     return responseBuilder
       .speak(speakOutput)
       .reprompt(speakOutput)
@@ -38,20 +48,10 @@ const QuizIntentHandler = {
     );
   },
   async handle(handlerInput) {
-    const mood =
-      handlerInput.requestEnvelope.request.intent.slots.mood.value;
-    const stiffness =
-      handlerInput.requestEnvelope.request.intent.slots.stiffness.value;
-    const slowness =
-      handlerInput.requestEnvelope.request.intent.slots.slowness.value;
-    const tremor =
-      handlerInput.requestEnvelope.request.intent.slots.tremor.value;
+    const { mood: {value: mood}, stiffness: {value: stiffness}, slowness: {value: slowness}, tremor: {value: tremor}} = handlerInput.requestEnvelope.request.intent.slots
+    const quizAnswers = { mood, stiffness, slowness, tremor };
 
-    const quizAnswers =
-      { mood, stiffness, slowness, tremor };
-
-    const response =
-      await axios.post(`${baseUrl}/quiz/${user_id}`, {...quizAnswers});
+    const response = await axios.post(`${baseUrl}/quiz/${user_id}`, {...quizAnswers});
 
     let speakOut = '';
     if(response.data.quiz && response.data.quiz.completed_at){
@@ -60,7 +60,9 @@ const QuizIntentHandler = {
       speakOut = 'Sorry, your answers could not be recorded. Please try again.';
     };
 
-    return handlerInput.responseBuilder.speak(speakOut).getResponse();
+    return handlerInput.responseBuilder
+      .speak(speakOut)
+      .getResponse();
   }
 };
 
@@ -97,43 +99,43 @@ const newReminderIntentHandler = {
           .getResponse()
       }
       switch (requestEnvelope.request.intent.confirmationStatus) {
-              case 'CONFIRMED':
-                console.log('Alexa confirmed intent, so clear to create reminder');
-                break;
-              case 'DENIED':
-                console.log('Alexa disconfirmed the intent; not creating reminder');
-                return responseBuilder
-                  .speak(`Ok, I will not create any reminders`)
-                  .reprompt('')
-                  .getResponse();
-          case 'NONE':
-          default:
-            console.log('delegate back to Alexa to get confirmation');
-            return responseBuilder
-              .addDelegateDirective()
-              .getResponse();
-        }
-        try {
-            const client = handlerInput.serviceClientFactory.getReminderManagementServiceClient();
-            axios.get('https://medirep-api.herokuapp.com/api/meds/1')
-            .then( async ({data: {meds}}) => {
-              const medsReminders = utils.reminderBuilder(meds)
+        case 'CONFIRMED':
+          // Alexa confirmed intent, so clear to create reminder
+          break;
+        case 'DENIED':
+          // Alexa disconfirmed the intent; not creating reminder
+          return responseBuilder
+            .speak(`Ok, I will not create any reminders`)
+            .reprompt('')
+            .getResponse();
+        default:
+          //delegate back to Alexa to get confirmation
+          return responseBuilder
+            .addDelegateDirective()
+            .getResponse();
+      }
+      try {
+        const client = handlerInput.serviceClientFactory.getReminderManagementServiceClient();
+        // TODO: delete reminders that are not required according to the schedule
+          API.getMedicationList(user_id)
+            .then( async (meds) => {
               const { alerts: presentReminders } = await client.getReminders();
-              const filteredReminders = utils.filterAgainstExistingReminders(presentReminders, medsReminders)
-              console.log(filteredReminders)
-              filteredReminders.forEach(async reminder => {
+              const filteredMeds = utils.filterMedsAgainstExistingReminders(meds, presentReminders)
+              const medsReminders = utils.reminderBuilder(filteredMeds)
+              medsReminders.forEach(async reminder => {
                 await client.createReminder(reminder).then(console.log);
               })
             })
             .catch(console.log)
       } catch (error) {
-              if (error.name !== 'ServiceError') {
-                console.log(`error: ${error.stack}`);
-                const response = responseBuilder.speak(`Something went wrong with the reminders`).getResponse();
-                return response;
-              }
-              throw error;
-            }
+        if (error.name !== 'ServiceError') {
+          console.log(`error: ${error.stack}`);
+          return responseBuilder
+            .speak(`Something went wrong with the reminders`)
+            .getResponse();
+        }
+        throw error;
+      }
     return responseBuilder
       .speak(`Reminders are up to date`)
       .getResponse()
@@ -148,7 +150,7 @@ const HelpIntentHandler = {
     );
   },
   handle(handlerInput) {
-    const speakOutput = "You can say hello to me! How can I help?";
+    const speakOutput = "I'm here to help you track of your medication and health. Try saying take a quiz.";
     return handlerInput.responseBuilder
       .speak(speakOutput)
       .reprompt(speakOutput)
@@ -196,6 +198,7 @@ const IntentReflectorHandler = {
     return handlerInput.responseBuilder.speak(speakOutput).getResponse();
   }
 };
+
 const ErrorHandler = {
   canHandle() {
     return true;
@@ -211,18 +214,6 @@ const ErrorHandler = {
   }
 };
 
-const RequestLog = {
-  async process(handlerInput) {
-    console.log(`REQUEST ENVELOPE = ${JSON.stringify(handlerInput.requestEnvelope)}`);
-  },
-};
-  
-const ResponseLog = {
-  process(handlerInput) {
-    console.log(`RESPONSE = ${JSON.stringify(handlerInput.responseBuilder.getResponse())}`);
-   },
-};
-
 exports.handler = Alexa.SkillBuilders.custom()
   .addRequestHandlers(
     LaunchRequestHandler,
@@ -236,7 +227,5 @@ exports.handler = Alexa.SkillBuilders.custom()
   )
   .withApiClient(new Alexa.DefaultApiClient())
   .addErrorHandlers(ErrorHandler)
-  .addRequestInterceptors(RequestLog)
-  .addResponseInterceptors(ResponseLog)
   .withCustomUserAgent(`Hayley_smells/v1`)
   .lambda();

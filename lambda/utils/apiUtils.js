@@ -1,4 +1,4 @@
-import axios from "axios"
+const axios = require("axios");
 
 // It's one of these three:
 // North America: https://api.amazonalexa.com
@@ -9,11 +9,12 @@ import axios from "axios"
 
 const baseUrl = "https://medirep-api.herokuapp.com/api";
 
-const getMedicationList = (user_id) => {
-    const { meds } = axios.get(`${BaseUrl}/meds/${user_id}`)
+const getMedicationList = async (user_id) => {
+    const { data: { meds } } = await axios.get(`${baseUrl}/meds/${user_id}`)
+    return meds
 }
 
-export default {
-    getRemindersFromAmazon,
+console.log(getMedicationList(1))
+module.exports = {
     getMedicationList
 }

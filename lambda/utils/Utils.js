@@ -3,57 +3,52 @@ const getTimeFromUTCString = (string) => {
 }
 
 const reminderBuilder = (meds) => {
-            class Reminder {
-                constructor({due, type}) {
-                  this.trigger = {
-                      type : "SCHEDULED_ABSOLUTE",
-                      timeZoneId : "Europe/London",
-                      scheduledTime : `2019-08-02T${getTimeFromUTCString(due)}:00.000`,
-                      recurrence : {                     
-                        freq : "DAILY"                
-                      }
-                  }
-                  this.alertInfo = {
-                        spokenInfo: {
-                            content: [{
-                                locale: "en-GB", 
-                                text: `It's time to take your ${type}`
-                            }]
-                        }
-                  }
-                  this.pushNotification = {                            
-                    status : "DISABLED"
-                  }
-                } 
+    class Reminder {
+        constructor({due, type}) {
+            this.trigger = {
+                type : "SCHEDULED_ABSOLUTE",
+                timeZoneId : "Europe/London",
+                scheduledTime : `2019-08-02T${getTimeFromUTCString(due)}:00.000`,
+                recurrence : {                     
+                    freq : "DAILY"                
+                }
             }
-            return meds.map(med => {
-                return new Reminder(med)
-            })
+            this.alertInfo = {
+                    spokenInfo: {
+                        content: [{
+                            locale: "en-GB", 
+                            text: `It's time to take your ${type}`
+                        }]
+                    }
+            }
+            this.pushNotification = {                            
+                status : "DISABLED"
+            }
+        } 
+    }
+    return meds.map(med => {
+        return new Reminder(med)
+    })
 }
 
-const filterAgainstExistingReminders = (presentReminders, pending) => {
-    const existing = presentReminders.map(({alertInfo: {spokenInfo: {content: [{ text }]}}, trigger: { scheduledTime }, status }) => {
-        return {
-            text,
-            time: getTimeFromUTCString(scheduledTime),
-            status
-        }
-    })
-    const filteredReminders = pending.filter(({alertInfo: {spokenInfo: {content: [{ text }]}}, trigger: { scheduledTime }}) => {
+const filterMedsAgainstExistingReminders = (meds, presentReminders) => {
+    const filteredMeds = meds.filter(({type, due}) => {
         let filterThisReminder = true
-        existing.forEach(existingReminder => {
-            if (text === existingReminder.text &&
-                scheduledTime === existingReminder.time &&
-                existingReminder.status === 'COMPLETED') {
+        presentReminders.forEach(({alertInfo: {spokenInfo: {content: [{ text }]}}, trigger: { scheduledTime }, status }) => {
+            if (`It's time to take your ${type}` === text
+                && getTimeFromUTCString(due) === getTimeFromUTCString(scheduledTime)
+                && status === 'ON') {
                     filterThisReminder = false
                 }
+                console.log(`It's time to take your ${type}`, text)
+                console.log(getTimeFromUTCString(due), getTimeFromUTCString(scheduledTime))
             })
-        return filterThisReminder
+            return filterThisReminder
     })
-    return filteredReminders
+    return filteredMeds
 }
 
 module.exports = {
     reminderBuilder,
-    filterAgainstExistingReminders
+    filterMedsAgainstExistingReminders
 } 
