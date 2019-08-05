@@ -3,7 +3,7 @@ const user_id = 1; // TODO: has to be an amazon ID
 const PERMISSIONS = ['alexa::alerts:reminders:skill:readwrite'];
 const utils = require('./utils/Utils')
 const API = require('./utils/apiUtils')
-const handlers = require('./handlers')
+const handlers = require('./handlers/index')
 const quizTime = '15:00' // TODO this needs to come from the backend at some point
 
 const LaunchRequestHandler = {
@@ -44,7 +44,7 @@ const QuizIntentHandler = {
     );
   },
   async handle(handlerInput) {
-    handlers.quizHandler(handlerInput)
+    return handlers.quizHandler(handlerInput)
   }
 };
 
@@ -69,7 +69,7 @@ const newReminderIntentHandler = {
           && Alexa.getIntentName(handlerInput.requestEnvelope) === 'newReminderIntent';
   },
   handle(handlerInput) {
-    handlers.newReminderHandler(handlerInput)
+    return handlers.newReminderHandler(handlerInput)
   }
 };
 
@@ -81,7 +81,7 @@ const medsTakenHandler = {
     );
   },
   handle(handlerInput) {
-    handlers.medsTakenHandler(handlerInput)
+    return handlers.medsTakenHandler(handlerInput)
   }
 }
 
@@ -169,5 +169,5 @@ exports.handler = Alexa.SkillBuilders.custom()
   )
   .withApiClient(new Alexa.DefaultApiClient())
   .addErrorHandlers(ErrorHandler)
-  .withCustomUserAgent(`medirep-alexa/v1`)
+  .withCustomUserAgent(`Hayley_smells/v1`)
   .lambda();

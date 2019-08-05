@@ -1,4 +1,5 @@
-import { tsModuleBlock } from "@babel/types";
+const API = require('../utils/apiUtils')
+const user_id = 1
 
 const medsTakenHandler = async () => {
     const result = await API.postMedsTaken(user_id)

@@ -1,11 +1,11 @@
 const utils = require('../utils/Utils');
 const API = require('../utils/apiUtils');
+const user_id = 1
+const quizTime = '15:00'
 
-const newReminderIntentHandler = async (handlerInput) => {
-    const client = handlerInput.serviceClientFactory.getReminderManagementServiceClient();
-    const requestEnvelope = handlerInput.requestEnvelope;
-    const responseBuilder = handlerInput.responseBuilder;
-    const permissions = requestEnvelope.context.System.user.permissions
+const newReminderIntentHandler = async ({ requestEnvelope, responseBuilder, serviceClientFactory}) => {
+    const client = serviceClientFactory.getReminderManagementServiceClient();
+    const { permissions } = requestEnvelope.context.System.user
     if (!permissions) {
       // if no permissions, nag the user to grant them
       return responseBuilder
@@ -31,19 +31,26 @@ const newReminderIntentHandler = async (handlerInput) => {
     }
     try {
       // TODO: delete reminders that are not required according to the schedule. Nuclear option?
-        const meds = await API.getMedicationList(user_id)
-        const { alerts: presentReminders } = await client.getReminders();
-        const filteredMeds = utils.filterMedsAgainstExistingReminders(meds, presentReminders)
-        const medsReminders = utils.reminderBuilder(filteredMeds)
-        medsReminders.forEach(async reminder => {
-          await client.createReminder(reminder).then(console.log)
-        })
-        const quiz = await utils.checkForQuizReminder(presentReminders, quizTime) // TODO: patch existing quiz reminder if time changed
-        if (!quiz) {
-          const quizReminder = utils.createQuizReminder(quizTime)
-          await client.createReminder(quizReminder).then(console.log)
-        }
-    } catch (error) {
+          const meds = await API.getMedicationList(user_id)
+          const { alerts: presentReminders } = await client.getReminders();
+          const filteredMeds = utils.filterMedsAgainstExistingReminders(meds, presentReminders)
+          const medsReminders = utils.reminderBuilder(filteredMeds)
+          medsReminders.forEach(async reminder => {
+            await client.createReminder(reminder).then(console.log)
+          })
+          console.log(medsReminders)
+          const quiz = await utils.checkForQuizReminder(presentReminders, quizTime) // TODO: patch existing quiz reminder if time changed
+          if (!quiz) {
+            const quizReminder = utils.createQuizReminder(quizTime)
+            await client.createReminder(quizReminder).then(console.log)
+          }
+          return responseBuilder
+            .speak('reminders are up to date. Can I help you with anything else?')
+            .reprompt('can i help you with anything else?')
+            .getResponse()
+    } 
+    catch (error) {
+      console.log(error)
       if (error.name !== 'ServiceError') {
         console.log(`error: ${error.stack}`);
         return responseBuilder
@@ -52,13 +59,7 @@ const newReminderIntentHandler = async (handlerInput) => {
       }
       throw error;
     }
-  return responseBuilder
-    .speak('Reminders are up to date. Would you like to do anything else?')
-    .reprompt('Can I help you with anything else?')
-    .getResponse()
 }
 
 
-export default {
-    newReminderIntentHandler
-}
+module.exports = newReminderIntentHandler
