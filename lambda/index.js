@@ -17,12 +17,12 @@ const LaunchRequestHandler = {
     const { responseBuilder } = handlerInput
     const requestEnvelope = handlerInput.requestEnvelope;
     const permissions = requestEnvelope.context.System.user.permissions
-      if (!permissions) {
-        // if no permissions, nag the user to grant them
-        return responseBuilder
-          .speak('I need permission to create reminders. Take a look at your alexa app to grant them.')
-          .withAskForPermissionsConsentCard(["alexa::alerts:reminders:skill:readwrite"])
-          .getResponse()
+    if (!permissions) {
+      // if no permissions, nag the user to grant them
+      return responseBuilder
+        .speak('I need permission to create reminders. Take a look at your alexa app to grant them.')
+        .withAskForPermissionsConsentCard(["alexa::alerts:reminders:skill:readwrite"])
+        .getResponse()
       }
     // check reminders...
     const upToDate = await utils.checkIfRemindersAreUpToDate(user_id, quizTime, client)
@@ -67,7 +67,7 @@ const PairDeviceIntentHandler = { // TODO: pull this into it's own file. It's hu
   async handle(handlerInput) {
     const { requestEnvelope } =handlerInput 
     const pairDeviceCode = requestEnvelope.request.intent.slots.pairDeviceCode.value;
-    const respose = await API.postHandShakeCode(user_id, value) // TODO: Logic to give user feedback if handshake was successful
+    const response = await API.postHandShakeCode(user_id, value) // TODO: Logic to give user feedback if handshake was successful
     return handlerInput.responseBuilder.speak(pairDeviceCode).getResponse();
   }
 };
