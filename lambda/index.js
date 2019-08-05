@@ -1,5 +1,4 @@
 const Alexa = require("ask-sdk-core");
-const baseUrl = "https://medirep-api.herokuapp.com/api";
 const user_id = 1; // TODO: has to be an amazon ID
 const PERMISSIONS = ['alexa::alerts:reminders:skill:readwrite'];
 const utils = require('./utils/Utils')
@@ -21,7 +20,7 @@ const LaunchRequestHandler = {
       // if no permissions, nag the user to grant them
       return responseBuilder
         .speak('I need permission to create reminders. Take a look at your alexa app to grant them.')
-        .withAskForPermissionsConsentCard(["alexa::alerts:reminders:skill:readwrite"])
+        .withAskForPermissionsConsentCard(PERMISSIONS)
         .getResponse()
       }
     // check reminders...
@@ -129,7 +128,8 @@ const newReminderIntentHandler = {
         throw error;
       }
     return responseBuilder
-      .speak(`Reminders are up to date`)
+      .speak('Reminders are up to date. Would you like to do anything else?')
+      .reprompt('Can I help you with anything else?')
       .getResponse()
   }
 };
