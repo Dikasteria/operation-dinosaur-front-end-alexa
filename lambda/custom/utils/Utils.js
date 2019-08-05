@@ -54,10 +54,13 @@ const checkForQuizReminder = (reminders, time) => {
 }
 
 const filterMedsAgainstExistingReminders = (meds, presentReminders) => {
-    return meds.filter(({type, due}) => {
-        const text = `It's time to take your ${type}. Don't forget to log that you've taken these. Say open Diary app and then: I've taken my meds`
-        const time = getTimeFromUTCString(due)
-        return !checkForExistingReminder(presentReminders, text, time)
+    return meds.filter(({type, due, status}) => {
+        if (status !== 5) {
+            const text = `It's time to take your ${type}. Don't forget to log that you've taken these. Say open Diary app and then: I've taken my meds`
+            const time = getTimeFromUTCString(due)
+            return !checkForExistingReminder(presentReminders, text, time)
+        }
+        return false
     })
 }
 // TODO tidy this up into a pure function
