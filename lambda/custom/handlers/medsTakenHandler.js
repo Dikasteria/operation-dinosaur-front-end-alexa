@@ -1,7 +1,8 @@
 const API = require('../utils/apiUtils')
 const user_id = 1
 
-const medsTakenHandler = async () => {
+const medsTakenHandler = async (handlerInput) => {
+    const user_id = handlerInput.requestEnvelope.session.user.userId
     const result = await API.postMedsTaken(user_id)
     const speakOut = result ?
     "Ok,  i've logged that you've taken your medication."

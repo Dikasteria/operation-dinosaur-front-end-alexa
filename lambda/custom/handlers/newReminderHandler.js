@@ -5,6 +5,7 @@ const quizTime = '15:00'
 
 const newReminderIntentHandler = async ({ requestEnvelope, responseBuilder, serviceClientFactory}) => {
     const client = serviceClientFactory.getReminderManagementServiceClient();
+    const user_id = requestEnvelope.session.user.userId
     const { permissions } = requestEnvelope.context.System.user
     if (!permissions) {
       // if no permissions, nag the user to grant them

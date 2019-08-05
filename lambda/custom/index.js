@@ -13,26 +13,27 @@ const LaunchRequestHandler = {
       );
     },
     async handle(handlerInput) {
-    const client = handlerInput.serviceClientFactory.getReminderManagementServiceClient();
-    const { responseBuilder } = handlerInput
-    const requestEnvelope = handlerInput.requestEnvelope;
-    const permissions = requestEnvelope.context.System.user.permissions
-    if (!permissions) {
-      // if no permissions, nag the user to grant them
+      const client = handlerInput.serviceClientFactory.getReminderManagementServiceClient();
+      const { responseBuilder } = handlerInput
+      const user_id = requestEnvelope.session.user.userId
+      const requestEnvelope = handlerInput.requestEnvelope;
+      const permissions = requestEnvelope.context.System.user.permissions
+      if (!permissions) {
+        // if no permissions, nag the user to grant them
+        return responseBuilder
+          .speak('I need permission to create reminders. Take a look at your alexa app to grant them.')
+          .withAskForPermissionsConsentCard(PERMISSIONS)
+          .getResponse()
+        }
+      // check reminders...
+      const upToDate = await utils.checkIfRemindersAreUpToDate(user_id, quizTime, client)
+      const speakOutput = upToDate ? 
+      "what would you like me to do"
+      : "It looks like there's been a change to your medication schedule. Please say update reminders to alter your reminders accordingly.";
       return responseBuilder
-        .speak('I need permission to create reminders. Take a look at your alexa app to grant them.')
-        .withAskForPermissionsConsentCard(PERMISSIONS)
-        .getResponse()
-      }
-    // check reminders...
-    const upToDate = await utils.checkIfRemindersAreUpToDate(user_id, quizTime, client)
-    const speakOutput = upToDate ? 
-    "what would you like me to do"
-    : "It looks like there's been a change to your medication schedule. Please say update reminders to alter your reminders accordingly.";
-    return responseBuilder
-      .speak(speakOutput)
-      .reprompt(speakOutput)
-      .getResponse();
+        .speak(speakOutput)
+        .reprompt(speakOutput)
+        .getResponse();
   }
 };
 
@@ -48,7 +49,7 @@ const QuizIntentHandler = {
   }
 };
 
-const PairDeviceIntentHandler = { // TODO: pull this into it's own file. It's huge! 
+const PairDeviceIntentHandler = {
   canHandle({ requestEnvelope }) {
     return (
       Alexa.getRequestType(requestEnvelope) === "IntentRequest" &&
@@ -56,10 +57,12 @@ const PairDeviceIntentHandler = { // TODO: pull this into it's own file. It's hu
     );
   },
   async handle(handlerInput) {
-    const { requestEnvelope } =handlerInput 
+    const { requestEnvelope } =handlerInput
+    const user_id = requestEnvelope.session.user.userId
     const pairDeviceCode = requestEnvelope.request.intent.slots.pairDeviceCode.value;
-    const response = await API.postHandShakeCode(user_id, value) // TODO: Logic to give user feedback if handshake was successful
-    return handlerInput.responseBuilder.speak(pairDeviceCode).getResponse();
+    const response = await API.postHandShakeCode(user_id, pairDeviceCode)
+    const speakOut = response ? "pairing sucessful" : "I'm afraid that didn't work"
+    return handlerInput.responseBuilder.speak(speakOut).getResponse();
   }
 };
 
