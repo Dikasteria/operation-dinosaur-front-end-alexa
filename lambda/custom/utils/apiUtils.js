@@ -21,7 +21,13 @@ const postMedsTaken = async (amazon_id) => {
     return confirmation
 }
 
+const postEvent = async (amazon_id, event) => {
+    const { data: { confirmation } } = await axios.post(`${baseUrl}/events/alexa`, { data: { event }, headers: {amazon_id} })
+    return confirmation
+}
+
 module.exports = {
+    postEvent,
     getMedicationList,
     postQuizAnswers,
     postHandShakeCode,
