@@ -7,7 +7,7 @@ const EventIntentHandler = {
           Alexa.getIntentName(requestEnvelope) === "EventIntent"
         );
     },
-    async handle({ requestEnvelope, responseBuilder }t) {
+    async handle({ requestEnvelope, responseBuilder }) {
         const { user_id } = requestEnvelope.session.user
         const { event: {value: event} } = requestEnvelope.request.intent.slots
         const result = await API.postEvent(user_id, { event })
@@ -20,4 +20,4 @@ const EventIntentHandler = {
     }
 }
 
-module.exports = eventHandler
+module.exports = EventIntentHandler

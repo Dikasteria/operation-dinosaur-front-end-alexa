@@ -1,7 +1,6 @@
 const Alexa = require("ask-sdk-core");
 const PERMISSIONS = ['alexa::alerts:reminders:skill:readwrite'];
 const utils = require('./utils/Utils')
-const API = require('./utils/apiUtils')
 const handlers = require('./handlers/index')
 const quizTime = '15:00' // hardcoded for now
 
@@ -69,8 +68,7 @@ const CancelAndStopIntentHandler = {
 const SessionEndedRequestHandler = {
   canHandle(handlerInput) {
     return (
-      Alexa.getRequestType(handlerInput.requestEnvelope) ===
-      "SessionEndedRequest"
+      Alexa.getRequestType(handlerInput.requestEnvelope) === "SessionEndedRequest"
     );
   },
   handle(handlerInput) {
@@ -98,7 +96,6 @@ const ErrorHandler = {
   handle(handlerInput, error) {
     console.log(`~~~~ Error handled: ${error.stack}`);
     const speakOutput = `Sorry, I had trouble doing what you asked. Please try again.`;
-
     return handlerInput.responseBuilder
       .speak(speakOutput)
       .reprompt(speakOutput)
