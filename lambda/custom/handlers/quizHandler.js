@@ -1,6 +1,13 @@
 const API = require('../utils/apiUtils')
 
-const quizHandler = async (handlerInput) => {
+const QuizIntentHandler = {
+  canHandle({ requestEnvelope }) {
+    return (
+      Alexa.getRequestType(requestEnvelope) === "IntentRequest" &&
+      Alexa.getIntentName(requestEnvelope) === "QuizIntent"
+    );
+  },
+  async handle(handlerInput) {
     const user_id = handlerInput.requestEnvelope.session.user.userId
     const { mood: {value: mood}, stiffness: {value: stiffness}, slowness: {value: slowness}, tremor: {value: tremor}} = handlerInput.requestEnvelope.request.intent.slots
     const quizAnswers = { mood, stiffness, slowness, tremor };
@@ -11,6 +18,8 @@ const quizHandler = async (handlerInput) => {
     return handlerInput.responseBuilder
       .speak(speakOut)
       .getResponse();
-}
+  }
+};
 
-module.exports = quizHandler
+
+module.exports = QuizIntentHandler

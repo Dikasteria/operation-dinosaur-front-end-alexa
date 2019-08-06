@@ -1,3 +1,5 @@
+const API = require('../utils/apiUtils')
+
 const EventIntentHandler = {
     canHandle( {requestEnvelope} ) {
         return (

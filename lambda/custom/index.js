@@ -160,8 +160,8 @@ const ErrorHandler = {
 exports.handler = Alexa.SkillBuilders.custom()
   .addRequestHandlers(
     handlers.eventHandler,
+    handlers.quizHandler,
     LaunchRequestHandler,
-    QuizIntentHandler,
     PairDeviceIntentHandler,
     newReminderIntentHandler,
     medsTakenHandler,
