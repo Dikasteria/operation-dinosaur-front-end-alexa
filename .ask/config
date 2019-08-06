@@ -6,11 +6,11 @@
       "merge": {},
       "resources": {
         "manifest": {
-          "eTag": "2d713b49aee51a9fb08d15d9f444345e"
+          "eTag": "fb4ead677e4ba37c2f545509b724f9af"
         },
         "interactionModel": {
           "en-GB": {
-            "eTag": "c68aa0deb4f30b297493bba3ac906c46"
+            "eTag": "31925c6c4f87264231454bb30b0b768d"
           }
         },
         "lambda": [
@@ -23,7 +23,7 @@
             "codeUri": "lambda/custom",
             "functionName": "ask-custom-medirep-alexa-default",
             "handler": "index.handler",
-            "revisionId": "c5c2e8d9-5b56-48d9-97c5-4a376754df13",
+            "revisionId": "2a76088a-84cf-4857-84e2-1cf81609a0b0",
             "runtime": "nodejs8.10"
           }
         ]

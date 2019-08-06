@@ -50,14 +50,17 @@ const checkForExistingReminder = (reminders, text, time) => {
 
 const checkForQuizReminder = (reminders, time) => {
         const text = 'Please take your quiz. Say: Open Diary App and then Take Quiz'
-        return checkForExistingRemindner(reminders, text, time)
+        return checkForExistingReminder(reminders, text, time)
 }
 
 const filterMedsAgainstExistingReminders = (meds, presentReminders) => {
-    return meds.filter(({type, due}) => {
-        const text = `It's time to take your ${type}. Don't forget to log that you've taken these. Say open Diary app and then: I've taken my meds`
-        const time = getTimeFromUTCString(due)
-        return !checkForExistingRemindner(presentReminders, text, time)
+    return meds.filter(({type, due, status}) => {
+        if (status !== 5) {
+            const text = `It's time to take your ${type}. Don't forget to log that you've taken these. Say open Diary app and then: I've taken my meds`
+            const time = getTimeFromUTCString(due)
+            return !checkForExistingReminder(presentReminders, text, time)
+        }
+        return false
     })
 }
 // TODO tidy this up into a pure function
@@ -65,6 +68,7 @@ const checkIfRemindersAreUpToDate = (user_id, time, client) => {
     return Promise.all([API.getMedicationList(user_id), client.getReminders()])
     .then(([meds, {alerts: presentReminders}])=>{
       const filteredMeds = filterMedsAgainstExistingReminders(meds, presentReminders)
+      console.log(checkForQuizReminder(presentReminders, time))
       return (filteredMeds.length === 0 && checkForQuizReminder(presentReminders, time))
     })
 }
