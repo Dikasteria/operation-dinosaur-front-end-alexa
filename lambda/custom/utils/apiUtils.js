@@ -27,6 +27,7 @@ const postMedsTaken = async (amazonid) => {
 }
 
 module.exports = {
+    postEvent,
     getMedicationList,
     postQuizAnswers,
     postHandShakeCode,

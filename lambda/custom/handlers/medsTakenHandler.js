@@ -1,7 +1,15 @@
 const API = require('../utils/apiUtils')
-const user_id = 1
+const Alexa = require("ask-sdk-core");
 
-const medsTakenHandler = async () => {
+const medsTakenHandler = {
+  canHandle({ requestEnvelope }) {
+    return (
+      Alexa.getRequestType(requestEnvelope) === "IntentRequest" &&
+      Alexa.getIntentName(requestEnvelope) === "medsTakenIntent"
+    );
+  },
+  async handle(handlerInput) {
+    const { user_id } = handlerInput.requestEnvelope.session.user
     const result = await API.postMedsTaken(user_id)
     const speakOut = result ?
     "Ok,  i've logged that you've taken your medication."
@@ -9,6 +17,7 @@ const medsTakenHandler = async () => {
     handlerInput.responseBuilder()
       .speak(speakOut)
       .getResponse()
+  }
 }
 
 module.exports = medsTakenHandler

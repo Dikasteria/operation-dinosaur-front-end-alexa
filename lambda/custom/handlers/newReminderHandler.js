@@ -1,10 +1,17 @@
 const utils = require('../utils/Utils');
+const Alexa = require("ask-sdk-core");
 const API = require('../utils/apiUtils');
 const user_id = 'a1234'
 const quizTime = '15:00'
 
-const newReminderIntentHandler = async ({ requestEnvelope, responseBuilder, serviceClientFactory}) => {
+const newReminderIntentHandler = {
+  canHandle(handlerInput) {
+      return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
+          && Alexa.getIntentName(handlerInput.requestEnvelope) === 'newReminderIntent';
+  },
+  async handle({ requestEnvelope, responseBuilder, serviceClientFactory}) {
     const client = serviceClientFactory.getReminderManagementServiceClient();
+    const { user_id } = requestEnvelope.session.user
     const { permissions } = requestEnvelope.context.System.user
     if (!permissions) {
       // if no permissions, nag the user to grant them
@@ -39,7 +46,7 @@ const newReminderIntentHandler = async ({ requestEnvelope, responseBuilder, serv
             await client.createReminder(reminder).then(console.log)
           })
           console.log(medsReminders)
-          const quiz = await utils.checkForQuizReminder(presentReminders, quizTime) // TODO: patch existing quiz reminder if time changed
+          const quiz = await utils.checkForQuizReminder(presentReminders, quizTime)
           if (!quiz) {
             const quizReminder = utils.createQuizReminder(quizTime)
             await client.createReminder(quizReminder).then(console.log)
@@ -59,7 +66,7 @@ const newReminderIntentHandler = async ({ requestEnvelope, responseBuilder, serv
       }
       throw error;
     }
+  }
 }
-
 
 module.exports = newReminderIntentHandler
