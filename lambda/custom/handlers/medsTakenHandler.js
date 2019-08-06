@@ -9,7 +9,8 @@ const medsTakenHandler = {
     );
   },
   async handle(handlerInput) {
-    const { user_id } = handlerInput.requestEnvelope.session.user
+    // const { user_id } = handlerInput.requestEnvelope.session.user
+    const user_id ='a1234'
     const result = await API.postMedsTaken(user_id)
     const speakOut = result ?
     "Ok,  i've logged that you've taken your medication."

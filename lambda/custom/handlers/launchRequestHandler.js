@@ -11,7 +11,8 @@ const LaunchRequestHandler = {
       async handle(handlerInput) {
         const client = handlerInput.serviceClientFactory.getReminderManagementServiceClient();
         const { responseBuilder } = handlerInput
-        const user_id = requestEnvelope.session.user.userId
+        // const user_id = requestEnvelope.session.user.userId
+        const user_id ='a1234'
         const requestEnvelope = handlerInput.requestEnvelope;
         const permissions = requestEnvelope.context.System.user.permissions
         if (!permissions) {
