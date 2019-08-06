@@ -36,18 +36,6 @@ const LaunchRequestHandler = {
   }
 };
 
-const EventIntentHandler = { 
-  canHandle( {requestEnvelope} ) {
-    return (
-      Alexa.getRequestType(requestEnvelope) === "IntentRequest" &&
-      Alexa.getIntentName(requestEnvelope) === "EventIntent"
-    );
-  },
-  handle(handlerInput) {
-    return handlers.eventHandler(handlerInput)
-  }
-}
-
 const QuizIntentHandler = {
   canHandle({ requestEnvelope }) {
     return (
@@ -171,7 +159,7 @@ const ErrorHandler = {
 
 exports.handler = Alexa.SkillBuilders.custom()
   .addRequestHandlers(
-    EventIntentHandler,
+    handlers.eventHandler,
     LaunchRequestHandler,
     QuizIntentHandler,
     PairDeviceIntentHandler,
