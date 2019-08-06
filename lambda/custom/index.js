@@ -1,5 +1,5 @@
 const Alexa = require("ask-sdk-core");
-const user_id = 1; // TODO: has to be an amazon ID
+const user_id = 'a1234'; // TODO: has to be an amazon ID
 const PERMISSIONS = ['alexa::alerts:reminders:skill:readwrite'];
 const utils = require('./utils/Utils')
 const API = require('./utils/apiUtils')

@@ -1,6 +1,6 @@
 const utils = require('../utils/Utils');
 const API = require('../utils/apiUtils');
-const user_id = 1
+const user_id = 'a1234'
 const quizTime = '15:00'
 
 const newReminderIntentHandler = async ({ requestEnvelope, responseBuilder, serviceClientFactory}) => {
