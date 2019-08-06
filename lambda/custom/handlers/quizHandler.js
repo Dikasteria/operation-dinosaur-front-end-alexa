@@ -1,5 +1,4 @@
 const API = require('../utils/apiUtils')
-const user_id = 1
 
 const quizHandler = async (handlerInput) => {
     const user_id = handlerInput.requestEnvelope.session.user.userId
