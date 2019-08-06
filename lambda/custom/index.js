@@ -36,18 +36,6 @@ const LaunchRequestHandler = {
   }
 };
 
-const medsTakenHandler = {
-  canHandle({ requestEnvelope }) {
-    return (
-      Alexa.getRequestType(requestEnvelope) === "IntentRequest" &&
-      Alexa.getIntentName(requestEnvelope) === "medsTakenIntent"
-    );
-  },
-  handle(handlerInput) {
-    return handlers.medsTakenHandler(handlerInput)
-  }
-}
-
 const HelpIntentHandler = {
   canHandle(handlerInput) {
     return (
@@ -121,9 +109,7 @@ const ErrorHandler = {
 exports.handler = Alexa.SkillBuilders.custom()
   .addRequestHandlers(
     LaunchRequestHandler,
-    handlers.eventHandler,
-    handlers.quizHandler,
-    handlers.newReminderHandler,
+    ...handlers,
     PairDeviceIntentHandler,
     medsTakenHandler,
     HelpIntentHandler,
@@ -133,5 +119,5 @@ exports.handler = Alexa.SkillBuilders.custom()
   )
   .withApiClient(new Alexa.DefaultApiClient())
   .addErrorHandlers(ErrorHandler)
-  .withCustomUserAgent(`Hayley_smells/v1`)
+  .withCustomUserAgent(`medirep-alexa/v1`)
   .lambda();
