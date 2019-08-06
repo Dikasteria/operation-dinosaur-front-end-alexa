@@ -36,45 +36,6 @@ const LaunchRequestHandler = {
   }
 };
 
-const QuizIntentHandler = {
-  canHandle({ requestEnvelope }) {
-    return (
-      Alexa.getRequestType(requestEnvelope) === "IntentRequest" &&
-      Alexa.getIntentName(requestEnvelope) === "QuizIntent"
-    );
-  },
-  async handle(handlerInput) {
-    return handlers.quizHandler(handlerInput)
-  }
-};
-
-const PairDeviceIntentHandler = {
-  canHandle({ requestEnvelope }) {
-    return (
-      Alexa.getRequestType(requestEnvelope) === "IntentRequest" &&
-      Alexa.getIntentName(requestEnvelope) === "PairDeviceIntent"
-    );
-  },
-  async handle(handlerInput) {
-    const { requestEnvelope } =handlerInput
-    const user_id = requestEnvelope.session.user.userId
-    const pairDeviceCode = requestEnvelope.request.intent.slots.pairDeviceCode.value;
-    const response = await API.postHandShakeCode(user_id, pairDeviceCode)
-    const speakOut = response ? "pairing sucessful" : "I'm afraid that didn't work"
-    return handlerInput.responseBuilder.speak(speakOut).getResponse();
-  }
-};
-
-const newReminderIntentHandler = {
-  canHandle(handlerInput) {
-      return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
-          && Alexa.getIntentName(handlerInput.requestEnvelope) === 'newReminderIntent';
-  },
-  handle(handlerInput) {
-    return handlers.newReminderHandler(handlerInput)
-  }
-};
-
 const medsTakenHandler = {
   canHandle({ requestEnvelope }) {
     return (
@@ -159,11 +120,11 @@ const ErrorHandler = {
 
 exports.handler = Alexa.SkillBuilders.custom()
   .addRequestHandlers(
+    LaunchRequestHandler,
     handlers.eventHandler,
     handlers.quizHandler,
-    LaunchRequestHandler,
+    handlers.newReminderHandler,
     PairDeviceIntentHandler,
-    newReminderIntentHandler,
     medsTakenHandler,
     HelpIntentHandler,
     CancelAndStopIntentHandler,
