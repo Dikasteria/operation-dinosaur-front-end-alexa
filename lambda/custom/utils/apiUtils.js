@@ -1,5 +1,5 @@
 const axios = require("axios");
-const baseUrl = "https://medirep-api-test.herokuapp.com/api";
+const baseUrl = "https://medirep-api.herokuapp.com/api";
 
 const getMedicationList = async (amazonid) => {
     const { data: { meds } } = await axios.get(`${baseUrl}/meds/alexa`, {headers: {amazonid}})
