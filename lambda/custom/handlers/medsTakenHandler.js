@@ -1,4 +1,5 @@
 const API = require('../utils/apiUtils')
+const Alexa = require("ask-sdk-core");
 
 const medsTakenHandler = {
   canHandle({ requestEnvelope }) {

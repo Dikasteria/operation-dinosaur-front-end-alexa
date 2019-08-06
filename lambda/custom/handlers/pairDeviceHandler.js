@@ -1,3 +1,6 @@
+const API = require('../utils/apiUtils')
+const Alexa = require("ask-sdk-core");
+
 const PairDeviceIntentHandler = {
     canHandle({ requestEnvelope }) {
       return (
