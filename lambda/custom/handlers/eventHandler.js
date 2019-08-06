@@ -1,3 +1,5 @@
+const API = require('../utils/apiUtils')
+
 const eventHandler = async ({ requestEnvelope, responseBuilder }) => {
     const { user_id } = requestEnvelope.session.user
     const { event: {value: event} } = requestEnvelope.request.intent.slots
