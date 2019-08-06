@@ -94,6 +94,21 @@
             "pair alexa",
             "add my alexa"
           ]
+        },
+        {
+          "name": "EventIntent",
+          "slots": [
+            {
+              "name": "event",
+              "type": "AMAZON.searchQuery"
+            }
+          ],
+          "samples": [
+            "log a {event}",
+            "a {event} has happened",
+            "take a note of a {event}",
+            "i've had a {event}"
+          ]
         }
       ],
       "types": []
@@ -101,10 +116,27 @@
     "dialog": {
       "intents": [
         {
+          "name": "EventIntent",
+          "confirmationRequired": false,
+          "prompts": {},
+          "slots": [
+            {
+              "name": "event",
+              "type": "AMAZON.searchQuery",
+              "elicitationRequired": true,
+              "confirmationRequired": false,
+              "prompts": {
+                "elicitation": "Elicit.Intent-Event.Slot-event"
+              }
+            }
+          ]
+        },
+        {
           "name": "QuizIntent",
           "confirmationRequired": false,
           "prompts": {},
           "slots": [
+            
             {
               "name": "mood",
               "type": "AMAZON.NUMBER",
@@ -170,6 +202,15 @@
       "delegationStrategy": "ALWAYS"
     },
     "prompts": [
+      {
+        "id": "Elicit.Intent-Event.Slot-Event",
+        "variations": [
+          {
+            "type": "PlainText",
+            "value": "Could you repeat that please? What would you like to make a note of?"
+          }
+        ]
+      },
       {
         "id": "Elicit.Intent-Quiz.Slot-Mood",
         "variations": [

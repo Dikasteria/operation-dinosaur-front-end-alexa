@@ -40,7 +40,7 @@ const newReminderIntentHandler = async ({ requestEnvelope, responseBuilder, serv
             await client.createReminder(reminder).then(console.log)
           })
           console.log(medsReminders)
-          const quiz = await utils.checkForQuizReminder(presentReminders, quizTime) // TODO: patch existing quiz reminder if time changed
+          const quiz = await utils.checkForQuizReminder(presentReminders, quizTime)
           if (!quiz) {
             const quizReminder = utils.createQuizReminder(quizTime)
             await client.createReminder(quizReminder).then(console.log)

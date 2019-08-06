@@ -1,10 +1,9 @@
 const Alexa = require("ask-sdk-core");
-const user_id = 1; // TODO: has to be an amazon ID
 const PERMISSIONS = ['alexa::alerts:reminders:skill:readwrite'];
 const utils = require('./utils/Utils')
 const API = require('./utils/apiUtils')
 const handlers = require('./handlers/index')
-const quizTime = '15:00' // TODO this needs to come from the backend at some point
+const quizTime = '15:00' // hardcoded for now
 
 const LaunchRequestHandler = {
   canHandle(handlerInput) {
@@ -36,6 +35,18 @@ const LaunchRequestHandler = {
         .getResponse();
   }
 };
+
+const EventIntnentHandler = { 
+  canHandle( {requestEnvelope} ) {
+    return (
+      Alexa.getRequestType(requestEnvelope) === "IntentRequest" &&
+      Alexa.getIntentName(requestEnvelope) === "EventIntent"
+    );
+  },
+  handle(handlerInput) {
+    return handlers.eventHandler(handlerInput)
+  }
+}
 
 const QuizIntentHandler = {
   canHandle({ requestEnvelope }) {
