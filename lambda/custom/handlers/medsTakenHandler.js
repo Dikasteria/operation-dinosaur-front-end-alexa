@@ -9,9 +9,8 @@ const medsTakenHandler = {
     );
   },
   async handle(handlerInput) {
-    // const { user_id } = handlerInput.requestEnvelope.session.user
-    const user_id ='a1234'
-    const {confirmation, message} = await API.postMedsTaken(user_id)
+    const { userId } = handlerInput.requestEnvelope.session.user
+    const {confirmation, message} = await API.postMedsTaken(userId)
     const speakOut = confirmation ? message : "I'm sorry. I could not log that you've taken your medication.";
     return handlerInput.responseBuilder
       .speak(speakOut)

@@ -9,8 +9,7 @@ const EventIntentHandler = {
         );
     },
     async handle({ requestEnvelope, responseBuilder }) {
-        // const { userId } = requestEnvelope.session.user
-        const userId ='a1234'
+        const { userId } = requestEnvelope.session.user
         const { event: {value: event} } = requestEnvelope.request.intent.slots
         // const result = await API.postEvent(userId, { event })
         // const speakOut = (result) ? 
