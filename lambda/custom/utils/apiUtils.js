@@ -21,14 +21,19 @@ const postHandShakeCode = async (amazonid, inputCode) => {
 
 // TODO: get the right endpoint. 
 // TODO: What does the response look like?
-const postMedsTaken = async (amazonid) => {
+const postMedsTaken = async ( amazonid ) => {
     const payload = {} // TODO: what does the backend want the payload to look like?
     const { data: { confirmation, message } } = await axios.post(`${baseUrl}/meds/alexa`, { payload }, { headers: {amazonid} })
     return {confirmation, message}
 }
 
+const deviceIsPairedCheck = async ( amazonid ) => {
+    const { data: { confirmation }} = await axios.get(`${baseUrl}/devices/alexa`, { headers: { amazonid } } )
+    return confirmation
+} 
 module.exports = {
     // postEvent,
+    deviceIsPairedCheck,
     getMedicationList,
     postQuizAnswers,
     postHandShakeCode,
