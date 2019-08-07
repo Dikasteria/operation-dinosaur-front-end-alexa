@@ -64,8 +64,8 @@ const filterMedsAgainstExistingReminders = (meds, presentReminders) => {
     })
 }
 // TODO tidy this up into a pure function
-const checkIfRemindersAreUpToDate = (user_id, time, client) => {
-    return Promise.all([API.getMedicationList(user_id), client.getReminders()])
+const checkIfRemindersAreUpToDate = (userId, time, client) => {
+    return Promise.all([API.getMedicationList(userId), client.getReminders()])
     .then(([meds, {alerts: presentReminders}])=>{
       const filteredMeds = filterMedsAgainstExistingReminders(meds, presentReminders)
       console.log(checkForQuizReminder(presentReminders, time))

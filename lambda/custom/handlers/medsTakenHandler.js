@@ -9,13 +9,12 @@ const medsTakenHandler = {
     );
   },
   async handle(handlerInput) {
-    const { user_id } = handlerInput.requestEnvelope.session.user
-    const result = await API.postMedsTaken(user_id)
-    const speakOut = result ?
-    "Ok,  i've logged that you've taken your medication."
-    : "I'm sorry. I could not log that you've taken your medication."  
-    handlerInput.responseBuilder()
+    const { userId } = handlerInput.requestEnvelope.session.user
+    const {confirmation, message} = await API.postMedsTaken(userId)
+    const speakOut = confirmation ? message : "I'm sorry. I could not log that you've taken your medication.";
+    return handlerInput.responseBuilder
       .speak(speakOut)
+      .reprompt('can i help you with anything else?')
       .getResponse()
   }
 }

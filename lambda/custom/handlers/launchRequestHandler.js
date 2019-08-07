@@ -1,6 +1,8 @@
 const utils = require('../utils/Utils')
+const API = require('../utils/apiUtils')
 const quizTime = '15:00'
 const Alexa = require("ask-sdk-core");
+const PairDeviceIntentHandler = require('./pairDeviceHandler')
 
 const LaunchRequestHandler = {
     canHandle(handlerInput) {
@@ -11,9 +13,13 @@ const LaunchRequestHandler = {
       async handle(handlerInput) {
         const client = handlerInput.serviceClientFactory.getReminderManagementServiceClient();
         const { responseBuilder } = handlerInput
-        const user_id = requestEnvelope.session.user.userId
-        const requestEnvelope = handlerInput.requestEnvelope;
+        const { requestEnvelope } = handlerInput;
+        const { userId } = requestEnvelope.session.user
         const permissions = requestEnvelope.context.System.user.permissions
+        const isPaired = await API.deviceIsPairedCheck(userId)
+        if (!isPaired) {
+          return PairDeviceIntentHandler.handle(handlerInput)
+        } 
         if (!permissions) {
           // if no permissions, nag the user to grant them
           return responseBuilder
@@ -22,8 +28,8 @@ const LaunchRequestHandler = {
             .getResponse()
           }
         // check reminders...
-        const upToDate = await utils.checkIfRemindersAreUpToDate(user_id, quizTime, client)
-        const speakOutput = upToDate ? 
+        const upToDate = await utils.checkIfRemindersAreUpToDate(userId, quizTime, client)
+        const speakOutput = (upToDate) ? 
         "what would you like me to do"
         : "It looks like there's been a change to your medication schedule. Please say update reminders to alter your reminders accordingly.";
         return responseBuilder

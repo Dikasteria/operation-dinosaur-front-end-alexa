@@ -100,7 +100,10 @@
           "slots": [
             {
               "name": "event",
-              "type": "AMAZON.searchQuery"
+              "type": "AMAZON.SearchQuery",
+              "samples" : [
+                "{event}"
+              ]
             }
           ],
           "samples": [
@@ -122,11 +125,11 @@
           "slots": [
             {
               "name": "event",
-              "type": "AMAZON.searchQuery",
+              "type": "AMAZON.SearchQuery",
               "elicitationRequired": true,
               "confirmationRequired": false,
               "prompts": {
-                "elicitation": "Elicit.Intent-Event.Slot-event"
+                "elicitation": "Elicit.Intent-Event.Slot-Event"
               }
             }
           ]

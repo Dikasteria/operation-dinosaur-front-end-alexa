@@ -1,7 +1,6 @@
 const utils = require('../utils/Utils');
 const Alexa = require("ask-sdk-core");
 const API = require('../utils/apiUtils');
-const user_id = 'a1234'
 const quizTime = '15:00'
 
 const newReminderIntentHandler = {
@@ -11,7 +10,7 @@ const newReminderIntentHandler = {
   },
   async handle({ requestEnvelope, responseBuilder, serviceClientFactory}) {
     const client = serviceClientFactory.getReminderManagementServiceClient();
-    const { user_id } = requestEnvelope.session.user
+    // const { userId } = requestEnvelope.session.user
     const { permissions } = requestEnvelope.context.System.user
     if (!permissions) {
       // if no permissions, nag the user to grant them
@@ -38,7 +37,7 @@ const newReminderIntentHandler = {
     }
     try {
       // TODO: delete reminders that are not required according to the schedule. Nuclear option?
-          const meds = await API.getMedicationList(user_id)
+          const meds = await API.getMedicationList(userId)
           const { alerts: presentReminders } = await client.getReminders();
           const filteredMeds = utils.filterMedsAgainstExistingReminders(meds, presentReminders)
           const medsReminders = utils.reminderBuilder(filteredMeds)

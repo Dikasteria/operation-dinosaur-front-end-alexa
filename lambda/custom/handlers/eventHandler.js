@@ -9,14 +9,14 @@ const EventIntentHandler = {
         );
     },
     async handle({ requestEnvelope, responseBuilder }) {
-        const { user_id } = requestEnvelope.session.user
+        const { userId } = requestEnvelope.session.user
         const { event: {value: event} } = requestEnvelope.request.intent.slots
-        const result = await API.postEvent(user_id, { event })
-        const speakOut = (result) ? 
-        `I've made a note of that ${event}`
-        :"Sorry, i couldn't make a note of that. Please try again"
+        // const result = await API.postEvent(userId, { event })
+        // const speakOut = (result) ? 
+        // `I've made a note of that ${event}`
+        // :"Sorry, i couldn't make a note of that. Please try again"
         return responseBuilder
-          .speak(speakOut)
+          .speak('hello dave')
           .getResponse();
     }
 }

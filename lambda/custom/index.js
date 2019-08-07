@@ -1,11 +1,4 @@
 const Alexa = require("ask-sdk-core");
-<<<<<<< HEAD
-const user_id = 'a1234'; // TODO: has to be an amazon ID
-const PERMISSIONS = ['alexa::alerts:reminders:skill:readwrite'];
-const utils = require('./utils/Utils')
-const API = require('./utils/apiUtils')
-=======
->>>>>>> 783f08a7d6f85d4c6d3bc24899bf3e8f80bc5a6b
 const handlers = require('./handlers/index')
 
 const HelpIntentHandler = {
@@ -78,7 +71,12 @@ const ErrorHandler = {
 
 exports.handler = Alexa.SkillBuilders.custom()
   .addRequestHandlers(
-    ...handlers,
+    handlers.launchRequestHandler,
+    handlers.pairDeviceHandler,
+    handlers.eventHandler,
+    handlers.newReminderHandler, 
+    handlers.quizHandler,
+    handlers.medsTakenHandler,
     HelpIntentHandler,
     CancelAndStopIntentHandler,
     SessionEndedRequestHandler,
