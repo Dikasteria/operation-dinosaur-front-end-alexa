@@ -30,13 +30,13 @@ class Reminder {
 
 const reminderBuilder = (meds) => {
     return meds.map(({due, type}) => {
-        const text = `It's time to take your ${type}. Don't forget to log that you've taken these. Say open Diary app and then: I've taken my meds`
+        const text = `It's time to take your ${type}. Don't forget to log that you've taken these. Say open medi rep and then: I've taken my meds`
         return new Reminder(due, text)
     })
 }
 
 const createQuizReminder= (time) => {
-    return new Reminder(time, 'Please take your quiz. Say: Open Diary App and then Take Quiz')
+    return new Reminder(time, 'Please take your quiz. Say: Open medi rep and then Take Quiz')
 }
 
 const checkForExistingReminder = (reminders, text, time) => {
@@ -49,14 +49,14 @@ const checkForExistingReminder = (reminders, text, time) => {
 }
 
 const checkForQuizReminder = (reminders, time) => {
-        const text = 'Please take your quiz. Say: Open Diary App and then Take Quiz'
+        const text = 'Please take your quiz. Say: Open medi rep and then Take Quiz'
         return checkForExistingReminder(reminders, text, time)
 }
 
 const filterMedsAgainstExistingReminders = (meds, presentReminders) => {
     return meds.filter(({type, due, status}) => {
         if (status !== 5) {
-            const text = `It's time to take your ${type}. Don't forget to log that you've taken these. Say open Diary app and then: I've taken my meds`
+            const text = `It's time to take your ${type}. Don't forget to log that you've taken these. Say open medi rep and then: I've taken my meds`
             const time = getTimeFromUTCString(due)
             return !checkForExistingReminder(presentReminders, text, time)
         }
