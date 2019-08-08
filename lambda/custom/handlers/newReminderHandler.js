@@ -10,7 +10,7 @@ const newReminderIntentHandler = {
   },
   async handle({ requestEnvelope, responseBuilder, serviceClientFactory}) {
     const client = serviceClientFactory.getReminderManagementServiceClient();
-    // const { userId } = requestEnvelope.session.user
+    const { userId } = requestEnvelope.session.user
     const { permissions } = requestEnvelope.context.System.user
     if (!permissions) {
       // if no permissions, nag the user to grant them

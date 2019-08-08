@@ -23,7 +23,7 @@
             "codeUri": "lambda/custom",
             "functionName": "ask-custom-medirep-alexa-default",
             "handler": "index.handler",
-            "revisionId": "72537691-8a75-4e08-adae-c1bce3d382f6",
+            "revisionId": "e507e190-1cea-449b-8679-f1d7ff943dc9",
             "runtime": "nodejs8.10"
           }
         ]
